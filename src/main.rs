@@ -43,6 +43,32 @@ impl EventHandler for Handler {
             }
         }
     }
+
+    async fn reaction_remove(&self, ctx: Context, reaction: Reaction) {
+        let message_id: &str = "1134469951848202402";
+        let role_id1: u64 = 1134450517544808519;
+        let role_id2: u64 = 1134451131288932373;
+
+        if reaction.message_id.to_string() == message_id {
+            let role_id = match reaction.emoji.to_string().as_str() {
+                "😩" => role_id1,
+                "😁" => role_id2,
+                _ => return,
+            };
+            if let Some(user_id) = reaction.user_id {
+                if let Some(guild_id) = reaction.guild_id {
+                    if let Ok(mut member) = guild_id.member(&ctx, user_id).await {
+                        if let Err(why) = member.remove_role(&ctx, role_id).await {
+                            println!("Ошибка удаления роли: {:?}", why);
+                        } else {
+                            println!("Роль успешно удалена");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 #[tokio::main]
