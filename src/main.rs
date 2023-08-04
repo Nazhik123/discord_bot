@@ -6,6 +6,9 @@ use serenity::async_trait;
 use serenity::model::prelude::Reaction;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
+use serenity::model::prelude::GuildId;
+use serenity::model::prelude::Member;
+use serenity::model::prelude::ChannelId;
 
 
 struct Handler;
@@ -16,15 +19,31 @@ impl EventHandler for Handler {
         println!("{} is connected!", ready.user.name);
     }
 
+    async fn guild_member_addition(&self, ctx: Context, _: GuildId, new_member: Member) {
+        let welcome_channel_id: u64 = 1136916857765498900;
+
+        if let Some(welcome_channel) = ChannelId(welcome_channel_id).to_channel(&ctx).await.unwrap().guild() {
+            let welcome_message = format!("Добро пожаловать на сервер, {}!", new_member.user.tag());
+
+            if let Err(why) = welcome_channel.send_message(&ctx, |m| {
+                m.content(welcome_message)
+            }).await {
+                println!("Error sending welcome message: {:?}", why);
+            }
+        }
+    }
+
     async fn reaction_add(&self, ctx: Context, reaction: Reaction) {
         let message_id: &str = "1134469951848202402";
-        let role_id1: u64 = 1134450517544808519; 
+        let role_id1: u64 = 1134450517544808519;
         let role_id2: u64 = 1134451131288932373; 
+        let role_id3: u64 = 1136917527025434706;
 
         if reaction.message_id.to_string() == message_id{
             let role_id = match reaction.emoji.to_string().as_str() {
                 "😩" => role_id1,
                 "😁" => role_id2,
+                "🤔" => role_id3,
                 _ => {
                     println!("Неизвестная реакция");
                     return;
@@ -46,13 +65,15 @@ impl EventHandler for Handler {
 
     async fn reaction_remove(&self, ctx: Context, reaction: Reaction) {
         let message_id: &str = "1134469951848202402";
-        let role_id1: u64 = 1134450517544808519;
-        let role_id2: u64 = 1134451131288932373;
+        let role_id1: u64 = 1134451131288932373;
+        let role_id2: u64 = 1134450517544808519; 
+        let role_id3: u64 = 1136917527025434706;
 
         if reaction.message_id.to_string() == message_id {
             let role_id = match reaction.emoji.to_string().as_str() {
                 "😩" => role_id1,
                 "😁" => role_id2,
+                "🤔" => role_id3,
                 _ => return,
             };
             if let Some(user_id) = reaction.user_id {
