@@ -6,6 +6,8 @@ use serenity::async_trait;
 use serenity::model::prelude::Reaction;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
+use serenity::model::prelude::GuildId;
+use serenity::model::prelude::Member;
 
 
 struct Handler;
@@ -14,6 +16,10 @@ struct Handler;
 impl EventHandler for Handler {
     async fn ready(&self, _ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
+    }
+
+    async fn guild_member_addition(&self, _: Context, guild_id: GuildId, new_member: Member) {
+        println!("New member joined: {}", new_member.user.name);
     }
 
     async fn reaction_add(&self, ctx: Context, reaction: Reaction) {
