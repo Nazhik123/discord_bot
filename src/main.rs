@@ -8,7 +8,7 @@ use serenity::model::gateway::Ready;
 use serenity::prelude::*;
 use serenity::model::prelude::GuildId;
 use serenity::model::prelude::Member;
-
+use serenity::model::prelude::*;
 
 struct Handler;
 
@@ -18,10 +18,12 @@ impl EventHandler for Handler {
         println!("{} is connected!", ready.user.name);
     }
 
-    async fn guild_member_addition(&self, _: Context, guild_id: GuildId, new_member: Member) {
-        println!("New member joined: {}", new_member.user.name);
-    }
+    async fn guild_member_addition(&self, ctx: Context, _guild_id: GuildId, new_member: Member) {
+        let welcome_channel_id: u64 = 1136916857765498900;
 
+        let channel_id = ChannelId(welcome_channel_id);
+        let _ = channel_id.say(&ctx.http, format!("Welcome to the server, {}!", new_member.user.name)).await;
+    }
     async fn reaction_add(&self, ctx: Context, reaction: Reaction) {
         let message_id: &str = "1134469951848202402";
         let role_id1: u64 = 1134450517544808519;
